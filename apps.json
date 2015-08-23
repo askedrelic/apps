@@ -1,0 +1,90 @@
+{
+   "namespace" : "portal_official",
+   "title" : "Portal Apps (BETA)",
+   "description" : "Official apps for Portal cloud servers (BETA).",
+   "apps" : [
+      {
+         "id" : "etherpad",
+         "release" : 0.01,
+         "memory" : 384,
+         "base" : "ubuntu14lts",
+         "title" : "Etherpad",
+         "description" : "Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.",
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/etherpad/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/etherpad/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "ghost",
+         "release" : 0.02,
+         "memory" : 384,
+         "base" : "ubuntu14lts",
+         "title" : "Ghost",
+         "description" : "Ghost is a simple, powerful publishing platform that allows you to share your stories with the world.",
+         "paths" : [
+            { "uri" : "/" }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/ghost/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/ghost/install-0.02.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "pvoip",
+         "release" : 0.01,
+         "memory" : 128,
+         "base" : "ubuntu14lts",
+         "title" : "VoIP Server",
+         "description" : "A simple VoIP server powered by Mumble.",
+         "ports" : [
+            { "protocol" : "tcp", "port" : 64738 },
+            { "protocol" : "udp", "port" : 64738 }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/pvoip/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/pvoip/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "pchat",
+         "release" : 0.04,
+         "memory" : 128,
+         "base" : "ubuntu14lts",
+         "title" : "Chat Server",
+         "description" : "A simple XMPP chat server powered by Parosody.",
+         "ports" : [
+            { "protocol" : "tcp", "port" : 5222 },
+            { "protocol" : "tcp", "port" : 5269 }
+         ],
+         "paths" : [
+            { "uri" : "/http-bind" }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/pchat/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/pchat/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "pvpn",
+         "release" : 0.03,
+         "memory" : 128,
+         "base" : "ubuntu14lts",
+         "title" : "VPN Server",
+         "description" : "A simple VPN server powered by OpenVPN.",
+         "ports" : [
+            { "protocol" : "udp", "port" : 1194 },
+            { "protocol" : "tcp", "port" : 1194 }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/pvpn/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/pvpn/dev.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "pmail",
+         "release" : 0.04,
+         "memory" : 256,
+         "base" : "ubuntu14lts",
+         "title" : "Email Server",
+         "description" : "A simple email server with SMTP and IMAP support compatibile with mobile and desktop email clients. Powered by Postfix and Dovecot.",
+         "ports" : [
+            { "protocol" : "tcp", "port" : 25 },
+            { "protocol" : "tcp", "port" : 587 },
+            { "protocol" : "tcp", "port" : 993 }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/pmail/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/pmail/latest.sh > install.sh && bash -x ./install.sh\n"
+      }
+   ]
+}
