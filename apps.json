@@ -5,11 +5,14 @@
    "apps" : [
       {
          "id" : "etherpad",
-         "release" : 0.01,
+         "release" : 0.02,
          "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Etherpad",
          "description" : "Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.",
+         "paths" : [
+            { "uri" : "/etherpad/" }
+         ],
          "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/etherpad/latest.png",
          "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/etherpad/latest.sh > install.sh && bash -x ./install.sh\n"
       },

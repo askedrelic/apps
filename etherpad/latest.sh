@@ -9,8 +9,10 @@ chmod 1777 /data/
 
 export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
 export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/domains/public/0/name)
+export GATEWAY=$(curl --silent http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/gateway)
+export PASSWORD_FILE="/data/pw"
 
-URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/private/0/uri)
+URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/public/0/uri)
 if [ "/" != "${URI: -1}" ] ; then
     URI="$URI/"
 fi
@@ -24,7 +26,15 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get install -y python-software-properties 
 apt-add-repository -y ppa:chris-lea/node.js 
 apt-get update
-apt-get install -y nodejs unzip nginx gzip git curl python libssl-dev pkg-config build-essential
+apt-get install -y nodejs unzip nginx-extras gzip git curl python libssl-dev pkg-config build-essential pwgen
+
+
+#
+# Generate admin password, if necessary.
+#
+[ -e $PASSWORD_FILE ] || pwgen 10 1 > $PASSWORD_FILE
+export PASSWORD=$(cat $PASSWORD_FILE)
+export PASSWORD_BASE64=$(echo -n "admin:$PASSWORD" | base64)
 
 
 #
@@ -32,13 +42,28 @@ apt-get install -y nodejs unzip nginx gzip git curl python libssl-dev pkg-config
 #
 cat <<NGINX > /etc/nginx/sites-available/default
 server {
-    listen 81 default_server;
+    listen 81;
+    return 302 https://${DOMAIN}${URI};
+}
+
+server {
+    listen 80;
     location $URI {
+
+        access_by_lua '
+                headers = ngx.req.get_headers()
+                if headers["X-Authenticated-User"] == "$USERNAME" then
+                    ngx.req.set_header("Authorization", "Basic $PASSWORD_BASE64")
+                end
+        ';
+
+        allow $GATEWAY;
+        deny all;
+
         proxy_pass http://127.0.0.1:9001/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_set_header Authorization "Basic YWRtaW46c3Nv"; # base64("admin:sso")
     }
 }
 NGINX
@@ -81,7 +106,7 @@ cat <<CONFIG >settings.json
     },
     "users": {
         "admin": {
-            "password": "sso",
+            "password": "$PASSWORD",
             "is_admin": true
         }
     },
