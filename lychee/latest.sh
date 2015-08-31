@@ -36,12 +36,17 @@ mkdir -p /app
 rm -rf /var/www/html
 
 ln -s /app /var/www/html
-ln -s /data/uploads /app/uploads
-ln -s /data/config /app/config
 
 cd /app
 
+# git clone requires emtpy dir; create symlinks after
 git clone https://github.com/electerious/Lychee.git .
+
+mv uploads /data/
+mv data /data/
+
+ln -s /data/uploads /app/
+ln -s /data/data /app/
 
 chown -R www-data:www-data /app
 chmod -R 777 uploads/ data/
