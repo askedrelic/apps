@@ -32,7 +32,12 @@ sed -i -e "s/^max_execution_time\s*=.*/max_execution_time = 200/" \
 -e "s/^upload_max_filesize\s*=.*/upload_max_filesize = 20M\nupload_max_size = 100M/" \
 -e "s/^memory_limit\s*=.*/memory_limit = 256M/" /etc/php5/apache2/php.ini
 
-mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
+mkdir -p /app
+rm -rf /var/www/html
+
+ln -s /app /var/www/html
+ln -s /data/uploads /app/uploads
+ln -s /data/config /app/config
 
 cd /app
 
