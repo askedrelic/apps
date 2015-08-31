@@ -10,6 +10,9 @@
          "base" : "ubuntu14lts",
          "title" : "Lychee",
          "description" : "Lychee is an easy to use and great looking photo-management-system you can run on your server, to manage and share photos.",
+         "ports": [
+             { "protocol" : "tcp", "port" : 82 }
+         ],
          "paths" : [
             { "uri" : "/lychee/" }
          ],
