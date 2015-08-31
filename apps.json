@@ -14,7 +14,7 @@
             { "uri" : "/lychee/" }
          ],
          "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/etherpad/latest.png",
-         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/etherpad/latest.sh > install.sh && bash -x ./install.sh\n"
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/askedrelic/apps/master/lychee/latest.sh > install.sh && bash -x ./install.sh\n"
       }
    ]
 }
