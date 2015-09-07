@@ -45,11 +45,11 @@
       },
       {
          "id" : "pvoip",
-         "release" : 0.02,
-         "memory" : 256,
+         "release" : 1.1,
+         "memory" : 384,
          "base" : "ubuntu14lts",
-         "title" : "VoIP Server",
-         "description" : "A simple VoIP server powered by Mumble.",
+         "title" : "Mumble",
+         "description" : "Mumble is an open source, low-latency, high quality voice chat software primarily intended for use while gaming.",
          "ports" : [
             { "protocol" : "tcp", "port" : 64738 },
             { "protocol" : "udp", "port" : 64738 }
@@ -76,11 +76,11 @@
       },
       {
          "id" : "pvpn",
-         "release" : 0.04,
+         "release" : 0.05,
          "memory" : 256,
          "base" : "ubuntu14lts",
-         "title" : "VPN Server",
-         "description" : "A simple VPN server powered by OpenVPN.",
+         "title" : "OpenVPN",
+         "description" : "OpenVPN is an open-source software application that implements virtual private network (VPN) techniques for creating secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facilities. It uses a custom security protocol[3] that utilizes SSL/TLS for key exchange.",
          "ports" : [
             { "protocol" : "udp", "port" : 1194 },
             { "protocol" : "tcp", "port" : 1194 }
@@ -90,7 +90,7 @@
       },
       {
          "id" : "pmail",
-         "release" : 0.05,
+         "release" : 1.1,
          "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Email Server",
