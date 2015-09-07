@@ -4,7 +4,7 @@
 set -e
 set -u
 
-# Sticky bit so Maildirs can be created, etc.
+# Set the sticky bit on /data.
 chmod 1777 /data/
 
 export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
@@ -20,13 +20,29 @@ export PASSWORD_FILE="/data/pw"
 export SSL_CERT="/data/ssl.crt"
 export SSL_KEY="/data/ssl.key"
 
+
+# TODO: Make ipv6 work!
+cat <<DISABLE_IPV6 >>/etc/sysctl.conf
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+DISABLE_IPV6
+
+sysctl -p
+
 #
 # Packages
 #
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-# apt-get upgrade -y
-apt-get install -y postfix dovecot-imapd pwgen
+apt-get install -y \
+    dovecot-imapd \
+    dovecot-sieve \
+    dovecot-antispam \
+    postfix \
+    postfix-pcre \
+    dspam \
+    pwgen
 
 
 #
@@ -61,7 +77,7 @@ echo "$DOMAIN:$(doveadm pw -p $PASSWORD):$USER_UID:$USER_UID" >> /etc/dovecot/us
 
 cat <<AUTH >/etc/dovecot/conf.d/10-auth.conf
 ssl = required
-auth_mechanisms = plain
+auth_mechanisms = plain login
 disable_plaintext_auth = yes
 !include auth-passwdfile.conf.ext
 AUTH
@@ -108,14 +124,21 @@ postmap /etc/postfix/vmailbox
 cat <<MAINCF >/etc/postfix/main.cf
 smtpd_banner = $DOMAIN ESMTP \$mail_name
 biff = no
-append_dot_mydomain = no
 readme_directory = no
-smtpd_tls_cert_file=/data/ssl.crt
-smtpd_tls_key_file=/data/ssl.key
-smtpd_use_tls=yes
+message_size_limit = 51200000
+append_dot_mydomain = no
+
+smtpd_use_tls = yes
+smtpd_tls_cert_file = /data/ssl.crt
+smtpd_tls_key_file = /data/ssl.key
+smtpd_tls_auth_only = yes
+smtpd_tls_received_header = yes
 smtpd_tls_session_cache_database = btree:\${data_directory}/smtpd_scache
+
+smtp_tls_security_level = may
+smtp_tls_loglevel = 2
 smtp_tls_session_cache_database = btree:\${data_directory}/smtp_scache
-smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+
 myhostname = $HOSTNAME
 myorigin = $DOMAIN
 alias_maps = hash:/etc/aliases
@@ -128,7 +151,8 @@ recipient_delimiter = +
 inet_interfaces = all
 inet_protocols = all
 
-#home_mailbox = Maildir/
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+
 virtual_mailbox_domains = $DOMAIN
 virtual_mailbox_base = /data
 virtual_mailbox_maps = hash:/etc/postfix/vmailbox
@@ -146,15 +170,25 @@ smtpd_sasl_security_options = noanonymous
 smtpd_sasl_local_domain = \$myhostname
 broken_sasl_auth_clients = yes
 smtpd_recipient_restrictions =
+	permit_mynetworks,
+	permit_sasl_authenticated,
 	reject_unknown_sender_domain,
 	reject_unknown_recipient_domain,
 	reject_unauth_pipelining,
-	permit_mynetworks,
-	permit_sasl_authenticated,
 	reject_unauth_destination
 smtpd_sender_restrictions = reject_unknown_sender_domain
 
+# Remove client IP and mailer headers.
+smtp_header_checks = pcre:/etc/postfix/smtp_header_checks.pcre
+
 MAINCF
+cat <<'SMTP_HEADER_CHECKS' >/etc/postfix/smtp_header_checks.pcre
+/^\s*(Received: from)[^\n]*(.*)/ REPLACE $1 [127.0.0.1] (localhost [127.0.0.1])$2
+/^\s*User-Agent/        IGNORE
+/^\s*X-Enigmail/        IGNORE
+/^\s*X-Mailer/          IGNORE
+/^\s*X-Originating-IP/  IGNORE
+SMTP_HEADER_CHECKS
 
 
 cat <<MASTER >>/etc/postfix/master.cf
