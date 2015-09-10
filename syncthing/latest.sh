@@ -69,3 +69,9 @@ start syncthing
 # Sync files in memory to disk.
 #
 sync
+
+# Wait until it's up
+until curl --output /dev/null --silent --fail "http://localhost:8384/"; do
+    sleep 2
+done
+

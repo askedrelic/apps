@@ -4,6 +4,22 @@
    "description" : "Official apps for Portal cloud servers (BETA).",
    "apps" : [
       {
+         "id" : "gogs",
+         "release" : 1,
+         "memory" : 512,
+         "base" : "ubuntu14lts",
+         "title" : "Gogs",
+         "description" : "Gogs(Go Git Service) is a painless self-hosted Git Service.",
+         "paths" : [
+            { "uri" : "/code/" }
+         ],
+         "ports" : [
+            { "protocol" : "tcp", "port" : 22 }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/gogs/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/gogs/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
          "id" : "syncthing",
          "release" : 1,
          "memory" : 512,
@@ -90,7 +106,7 @@
       },
       {
          "id" : "pmail",
-         "release" : 1.1,
+         "release" : 1.2,
          "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Email Server",
