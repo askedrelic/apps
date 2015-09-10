@@ -92,7 +92,7 @@
       },
       {
          "id" : "pvpn",
-         "release" : 0.05,
+         "release" : 0.06,
          "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "OpenVPN",
