@@ -60,7 +60,7 @@ stop on runlevel [!2345]
 expect daemon
 respawn
 script
-    su -l $USERNAME -c "tmux new-session -d -s '$GOTTY_SESSION $GOTTY_CMD'"
+    su -l $USERNAME -c "tmux new-session -d -s $GOTTY_SESSION '$GOTTY_CMD'"
 end script
 WEECHAT_UPSTART
 
