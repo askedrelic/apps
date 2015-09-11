@@ -4,6 +4,42 @@
    "description" : "Official apps for Portal cloud servers (BETA).",
    "apps" : [
       {
+         "id" : "weechat",
+         "release" : 0.1,
+         "memory" : 256,
+         "base" : "ubuntu14lts",
+         "title" : "WeeChat",
+         "description" : "WeeChat (Wee Enhanced Environment for Chat) is a free and open-source Internet Relay Chat client, which is designed to be light and fast.",
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/weechat/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/weechat/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "shell",
+         "release" : 0.3,
+         "memory" : 256,
+         "base" : "ubuntu14lts",
+         "title" : "Linux Shell",
+         "description" : "Ubuntu 14.04 LTS using Gotty to run a private shell over WebSockets.",
+         "ports" : [
+            { "protocol" : "tcp", "port" : 22 }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/shell/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/shell/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "tor",
+         "release" : 0.1,
+         "memory" : 384,
+         "base" : "ubuntu14lts",
+         "title" : "Tor",
+         "description" : "Tor is free software and an open network that helps you defend against traffic analysis, a form of network surveillance that threatens personal freedom and privacy, confidential business activities and relationships, and state security.",
+         "ports" : [
+            { "protocol" : "tcp", "port" : 9001 }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/tor/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/tor/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
          "id" : "gogs",
          "release" : 1,
          "memory" : 512,
