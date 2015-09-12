@@ -5,16 +5,17 @@ set -u
 
 export USERNAME=$(curl http://169.254.169.254/metadata/v1/user/username)
 export DOMAIN=$(curl http://169.254.169.254/metadata/v1/paths/public/0/domain)
-
-export GOGS_VERSION="v0.6.9"
-export GOGS_REPO="/data/git/gogs-repositories"
-
 URI=$(curl http://169.254.169.254/metadata/v1/paths/public/0/uri)
 if [ "/" != "${URI: -1}" ] ; then
     URI="$URI/"
 fi
 export URI
 
+#
+# Settings
+#
+export GOGS_VERSION="v0.6.9"
+export GOGS_REPO="/data/git/gogs-repositories"
 
 #
 # Packages
@@ -25,31 +26,30 @@ apt-get install -y unzip git nginx
 
 
 #
-# nginx redirect
+# nginx
 #
 cat <<NGINX > /etc/nginx/sites-available/default
-server {
-    listen 81;
-    server_name $DOMAIN;
-    return 302 https://${DOMAIN}${URI};
-}
 server {
     listen 80;
     server_name $DOMAIN;
     location $URI {
-        proxy_pass http://127.0.0.1:3000/;
+        proxy_pass http://127.0.0.1:8888/;
     }
 }
 NGINX
 service nginx restart
 
+#
 # Download
+#
 cd /opt/
 wget https://github.com/gogits/gogs/releases/download/${GOGS_VERSION}/linux_amd64.zip
 unzip linux_amd64.zip
 cd gogs/
 
-# Create config
+#
+# Setup
+#
 mkdir -p custom/conf/
 cat <<GOGS >custom/conf/app.ini
 [server]
@@ -116,8 +116,5 @@ until curl --output /dev/null --silent --fail "https://${DOMAIN}${URI}"; do slee
 
 sleep 1
 
-if [ ! -e /data/gogs.pw ] ; then
-    /opt/submit-gogs-install-form $USERNAME "https://${DOMAIN}${URI}/install" >/data/gogs.pw
-    chown $USERNAME:$USERNAME /data/gogs.pw
-fi
+/opt/submit-gogs-install-form $USERNAME "https://${DOMAIN}${URI}/install"
 

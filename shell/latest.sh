@@ -54,7 +54,7 @@ stop on runlevel [!2345]
 expect daemon
 respawn
 script
-    su -l $USERNAME -c "tmux new-session -d -s '$GOTTY_SESSION $GOTTY_CMD'"
+    su -l $USERNAME -c "tmux new-session -d -s $GOTTY_SESSION '$GOTTY_CMD'"
 end script
 BASH_UPSTART
 
@@ -73,7 +73,7 @@ start on runlevel [2345]
 stop on runlevel [!2345]
 respawn
 script
-    su -l $USERNAME -c "/usr/local/bin/gotty --title-format 'Shell - ({{ .Hostname }})' --root-url $URI_NOSLASH --port 81 --permit-write tmux attach-session -t $GOTTY_SESSION"
+    su -l $USERNAME -c "/usr/local/bin/gotty --title-format 'Shell - ({{ .Hostname }})' --root-url $URI_NOSLASH --port 81 --permit-write tmux new-session -A -s $GOTTY_SESSION '$GOTTY_CMD'"
 end script
 GOTTY_UPSTART
 

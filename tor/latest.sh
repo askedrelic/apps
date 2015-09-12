@@ -3,9 +3,10 @@ set -e
 set -u
 
 export USERNAME="tor-debian"
+export HOSTNAME=$(hostname)
 export DOMAIN=$(curl http://169.254.169.254/metadata/v1/paths/public/0/domain)
 export GATEWAY=$(curl --silent http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/gateway)
-URI=$(curl http://169.254.169.254/metadata/v1/paths/private/0/uri)
+URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/private/0/uri)
 if [ "/" != "${URI: -1}" ] ; then
     URI="$URI/"
 fi
@@ -51,6 +52,8 @@ ExitPolicy reject *:*
 
 RelayBandwidthRate 128 KB
 RelayBandwidthBurst 256 KB
+
+Nickname $HOSTNAME
 
 AccountingStart month 1 00:00
 AccountingMax 128 GB

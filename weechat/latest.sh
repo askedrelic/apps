@@ -2,10 +2,10 @@
 set -e
 set -u
 
-export USERNAME=$(curl http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl http://169.254.169.254/metadata/v1/paths/public/0/domain)
+export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
+export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/paths/public/0/domain)
 export GATEWAY=$(curl --silent http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/gateway)
-URI=$(curl http://169.254.169.254/metadata/v1/paths/private/0/uri)
+URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/private/0/uri)
 if [ "/" != "${URI: -1}" ] ; then
     URI="$URI/"
 fi
@@ -79,7 +79,7 @@ start on runlevel [2345]
 stop on runlevel [!2345]
 respawn
 script
-    su -l $USERNAME -c "/usr/local/bin/gotty --title-format 'WeeChat - ({{ .Hostname }})' --root-url $URI_NOSLASH --port 81 --permit-write tmux attach-session -t $GOTTY_SESSION"
+    su -l $USERNAME -c "/usr/local/bin/gotty --title-format 'WeeChat - ({{ .Hostname }})' --root-url $URI_NOSLASH --port 81 --permit-write tmux new-session -A -s $GOTTY_SESSION '$GOTTY_CMD'"
 end script
 GOTTY_UPSTART
 

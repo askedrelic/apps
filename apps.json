@@ -4,6 +4,29 @@
    "description" : "Official apps for Portal cloud servers (BETA).",
    "apps" : [
       {
+         "id" : "crawl",
+         "release" : 0.1,
+         "memory" : 256,
+         "base" : "ubuntu14lts",
+         "title" : "Crawl",
+         "description" : "A roguelike adventure through dungeons filled with dangerous monsters in a quest to find the mystifyingly fabulous Orb of Zot.",
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/crawl/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/crawl/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
+         "id" : "searx",
+         "release" : 0.01,
+         "memory" : 512,
+         "base" : "ubuntu14lts",
+         "title" : "Searx",
+         "description" : "Searx is a metasearch engine, aggregating the results of other search engines while not storing information about its users.",
+         "paths" : [
+            { "uri" : "/searx/" }
+         ],
+         "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/searx/latest.png",
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/searx/latest.sh > install.sh && bash -x ./install.sh\n"
+      },
+      {
          "id" : "weechat",
          "release" : 0.1,
          "memory" : 256,
@@ -15,7 +38,7 @@
       },
       {
          "id" : "shell",
-         "release" : 0.3,
+         "release" : 0.4,
          "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "Linux Shell",
