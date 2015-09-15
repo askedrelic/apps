@@ -43,7 +43,7 @@ start on runlevel [2345]
 stop on runlevel [!2345]
 respawn
 script
-    su -l $USERNAME -c "/usr/local/bin/gotty --title-format 'Shell - ({{ .Hostname }})' --root-url $URI_NOSLASH --port 81 --permit-write byobu-tmux new-session -A -s $GOTTY_SESSION '$GOTTY_CMD'"
+    su -l $USERNAME -c "/usr/local/bin/gotty --title-format 'Shell - ({{ .Hostname }})' --root-url $PRIVATE_URI_NOSLASH --port 81 --permit-write byobu-tmux new-session -A -s $GOTTY_SESSION '$GOTTY_CMD'"
 end script
 GOTTY_UPSTART
 
