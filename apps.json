@@ -5,8 +5,8 @@
    "apps" : [
       {
          "id" : "crawl",
-         "release" : 0.1,
-         "memory" : 256,
+         "release" : 1.5,
+         "memory" : 128,
          "base" : "ubuntu14lts",
          "title" : "Crawl",
          "description" : "A roguelike adventure through dungeons filled with dangerous monsters in a quest to find the mystifyingly fabulous Orb of Zot.",
@@ -15,8 +15,8 @@
       },
       {
          "id" : "searx",
-         "release" : 0.01,
-         "memory" : 512,
+         "release" : 1.5,
+         "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Searx",
          "description" : "Searx is a metasearch engine, aggregating the results of other search engines while not storing information about its users.",
@@ -28,7 +28,7 @@
       },
       {
          "id" : "weechat",
-         "release" : 0.1,
+         "release" : 1.5,
          "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "WeeChat",
@@ -38,7 +38,7 @@
       },
       {
          "id" : "shell",
-         "release" : 0.4,
+         "release" : 1.5,
          "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "Linux Shell",
@@ -51,8 +51,8 @@
       },
       {
          "id" : "tor",
-         "release" : 0.1,
-         "memory" : 384,
+         "release" : 1.5,
+         "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "Tor",
          "description" : "Tor is free software and an open network that helps you defend against traffic analysis, a form of network surveillance that threatens personal freedom and privacy, confidential business activities and relationships, and state security.",
@@ -64,7 +64,7 @@
       },
       {
          "id" : "gogs",
-         "release" : 1,
+         "release" : 1.5,
          "memory" : 512,
          "base" : "ubuntu14lts",
          "title" : "Gogs",
@@ -80,8 +80,8 @@
       },
       {
          "id" : "syncthing",
-         "release" : 1,
-         "memory" : 512,
+         "release" : 1.5,
+         "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "Syncthing",
          "description" : "Open Source Continuous File Synchronization",
@@ -94,8 +94,8 @@
       },
       {
          "id" : "etherpad",
-         "release" : 0.03,
-         "memory" : 512,
+         "release" : 1.5,
+         "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Etherpad",
          "description" : "Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.",
@@ -107,8 +107,8 @@
       },
       {
          "id" : "ghost",
-         "release" : 0.02,
-         "memory" : 512,
+         "release" : 1.5,
+         "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Ghost",
          "description" : "Ghost is a simple, powerful publishing platform that allows you to share your stories with the world.",
@@ -120,8 +120,8 @@
       },
       {
          "id" : "pvoip",
-         "release" : 1.2,
-         "memory" : 384,
+         "release" : 1.5,
+         "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "Mumble",
          "description" : "Mumble is an open source, low-latency, high quality voice chat software primarily intended for use while gaming.",
@@ -134,7 +134,7 @@
       },
       {
          "id" : "pchat",
-         "release" : 0.06,
+         "release" : 1.5,
          "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "Chat Server",
@@ -151,7 +151,7 @@
       },
       {
          "id" : "pvpn",
-         "release" : 0.06,
+         "release" : 1.5,
          "memory" : 256,
          "base" : "ubuntu14lts",
          "title" : "OpenVPN",
@@ -161,11 +161,11 @@
             { "protocol" : "tcp", "port" : 1194 }
          ],
          "icon_url" : "https://raw.githubusercontent.com/portalplatform/apps/master/pvpn/latest.png",
-         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/pvpn/dev.sh > install.sh && bash -x ./install.sh\n"
+         "vendor_data" : "#!/bin/bash\ncurl https://raw.githubusercontent.com/portalplatform/apps/master/pvpn/latest.sh > install.sh && bash -x ./install.sh\n"
       },
       {
          "id" : "pmail",
-         "release" : 1.3,
+         "release" : 1.5,
          "memory" : 384,
          "base" : "ubuntu14lts",
          "title" : "Email Server",

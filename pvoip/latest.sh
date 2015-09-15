@@ -1,34 +1,20 @@
 #!/bin/bash
 
-# Bash settings
-set -e
-set -u
-
-# Sticky bit so Maildirs can be created, etc.
-chmod 1777 /data/
-
-export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/domains/public/0/name)
-export URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/private/0/uri)
+source <(curl -s https://raw.githubusercontent.com/portalplatform/apps/master/portal.sh)
 
 export USER_UID=$(id -u $USERNAME)
 export PASSWORD_FILE="/data/pw"
 export SUPERUSER_FILE="/data/superuser"
-
 export DAEMON_URL="https://raw.githubusercontent.com/portalplatform/apps/master/pvoip/latest.tar.gz"
 
-#
 # Packages
-#
 export DEBIAN_FRONTEND=noninteractive
 add-apt-repository -y ppa:mumble/release
 apt-get update
 apt-get install -y pwgen mumble-server
 
 
-#
 # Generate password, if necessary.
-#
 [ -e $PASSWORD_FILE ] || pwgen 10 1 > $PASSWORD_FILE
 export PASSWORD=$(cat $PASSWORD_FILE)
 
@@ -61,9 +47,7 @@ service mumble-server restart
 # Set the superuser password.
 murmurd -ini /etc/mumble-server.ini -supw "$SUPERUSER"
 
-#
 # The pvoip web interface (listens on port 81)
-#
 cd /opt/ && wget $DAEMON_URL && tar xvfz $(basename $DAEMON_URL)
 
 # Create the Upstart job.
@@ -78,14 +62,12 @@ script
     export PORTAL_PASSWORD="$PASSWORD"
     export PORTAL_SUPERUSER="$SUPERUSER"
     export PORTAL_DOMAIN="$DOMAIN"
-    export PORTAL_PREFIX="$URI"
+    export PORTAL_PREFIX="$PRIVATE_URI"
     ./pvoip
 end script
 UPSTART
 
 start pvoip
 
-#
 # Sync files in memory to disk.
-#
 sync

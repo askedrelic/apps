@@ -1,38 +1,15 @@
 #!/bin/bash
 
-# Bash settings
-set -e
-set -u
-
-# Set the sticky bit on /data.
-chmod 1777 /data/
-
-export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/domains/public/0/name)
-export URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/private/0/uri)
+source <(curl -s https://raw.githubusercontent.com/portalplatform/apps/master/portal.sh)
 
 export DAEMON_URL="https://raw.githubusercontent.com/portalplatform/apps/master/pmail/latest.tar.gz"
-
 export USER_UID=$(id -u $USERNAME)
 export HOSTNAME=$(hostname)
 export PASSWORD_FILE="/data/pw"
-
 export SSL_CERT="/data/ssl.crt"
 export SSL_KEY="/data/ssl.key"
 
-
-# TODO: Make ipv6 work!
-cat <<DISABLE_IPV6 >>/etc/sysctl.conf
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-DISABLE_IPV6
-
-sysctl -p
-
-#
 # Packages
-#
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y \
@@ -45,16 +22,12 @@ apt-get install -y \
     pwgen
 
 
-#
 # Generate password, if necessary.
-#
 [ -e $PASSWORD_FILE ] || pwgen 10 1 > $PASSWORD_FILE
 export PASSWORD=$(cat $PASSWORD_FILE)
 
 
-#
 # Generate self-signed cert, if necessary.
-#
 [ -e $SSL_CERT ] || openssl req \
     -new \
     -newkey rsa:2048 \
@@ -207,14 +180,10 @@ MASTER
 service postfix restart
 
 
-
-#
 # The pmail web interface (listens on port 81)
-#
-
 cd /opt/ && wget $DAEMON_URL && tar xvfz $(basename $DAEMON_URL)
 
-# Create the Upstart job.
+# Create the pmail service.
 cat <<UPSTART > /etc/init/pmail.conf
 description "pmail"
 start on runlevel [2345]
@@ -225,7 +194,7 @@ script
     export MAILSERVER_USERNAME="$USERNAME"
     export MAILSERVER_PASSWORD="$PASSWORD"
     export MAILSERVER_DOMAIN="$DOMAIN"
-    export MAILSERVER_PREFIX="$URI"
+    export MAILSERVER_PREFIX="$PRIVATE_URI"
     ./pmail
 end script
 UPSTART
@@ -233,7 +202,5 @@ UPSTART
 start pmail
 
 
-#
 # Sync files in memory to disk.
-#
 sync

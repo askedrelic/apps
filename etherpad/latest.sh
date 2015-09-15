@@ -1,23 +1,8 @@
 #!/bin/bash
 
-# Bash settings
-set -e
-set -u
+source <(curl -s https://raw.githubusercontent.com/portalplatform/apps/master/portal.sh)
 
-# Set the sticky bit.
-chmod 1777 /data/
-
-export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/domains/public/0/name)
-export GATEWAY=$(curl --silent http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/gateway)
 export PASSWORD_FILE="/data/pw"
-
-URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/public/0/uri)
-if [ "/" != "${URI: -1}" ] ; then
-    URI="$URI/"
-fi
-export URI
-
 
 #
 # Packages
@@ -43,12 +28,12 @@ export PASSWORD_BASE64=$(echo -n "admin:$PASSWORD" | base64)
 cat <<NGINX > /etc/nginx/sites-available/default
 server {
     listen 81;
-    return 302 https://${DOMAIN}${URI};
+    return 302 https://${DOMAIN}${PUBLIC_URI_WITHSLASH};
 }
 
 server {
     listen 80;
-    location $URI {
+    location $PUBLIC_URI_WITHSLASH {
 
         access_by_lua '
                 headers = ngx.req.get_headers()

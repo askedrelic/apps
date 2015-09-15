@@ -1,47 +1,27 @@
 #!/bin/bash
 
-# Bash settings
-set -e
-set -u
-
-# Sticky bit so Maildirs can be created, etc.
-chmod 1777 /data/
-
-export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/domains/public/0/name)
-export URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/private/0/uri)
+source <(curl -s https://raw.githubusercontent.com/portalplatform/apps/master/portal.sh)
 
 export USER_UID=$(id -u $USERNAME)
 export HOSTNAME=$(hostname)
 export PASSWORD_FILE="/data/pw"
-
 export SSL_CERT="/data/ssl.crt"
 export SSL_KEY="/data/ssl.key"
-
 export DAEMON_URL="https://raw.githubusercontent.com/portalplatform/apps/master/pchat/latest.tar.gz"
 
-#
 # Packages
-#
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-# apt-get upgrade -y
 apt-get install -y prosody pwgen
 
 # Allow lua to bind to privileged ports (port 80).
 setcap cap_net_bind_service=+ep /usr/bin/lua5.1 
 
-#
 # Generate password, if necessary.
-#
 [ -e $PASSWORD_FILE ] || pwgen 10 1 > $PASSWORD_FILE
 export PASSWORD=$(cat $PASSWORD_FILE)
 
-
-
-#
 # Generate self-signed cert, if necessary.
-#
 if [ ! -e $SSL_CERT ] ; then
     openssl req \
         -new \
@@ -136,14 +116,11 @@ if [ -z "$(find /data -name accounts -type d)" ] ; then
     prosodyctl register "$DOMAIN" "$DOMAIN" "$PASSWORD"
 fi
 
-#
 # The pchat web interface (listens on port 81)
-#
-
 cd /opt/ && wget $DAEMON_URL && tar xvfz $(basename $DAEMON_URL)
 
 # Create the Upstart job.
-cat <<UPSTART > /etc/init/pchat.conf
+cat <<UPSTART >/etc/init/pchat.conf
 description "pchat"
 start on runlevel [2345]
 stop on runlevel [!2345]
@@ -153,14 +130,13 @@ script
     export PORTAL_USERNAME="$USERNAME"
     export PORTAL_PASSWORD="$PASSWORD"
     export PORTAL_DOMAIN="$DOMAIN"
-    export PORTAL_PREFIX="$URI"
+    export PORTAL_PREFIX="$PRIVATE_URI"
     ./pchat
 end script
 UPSTART
 
 start pchat
 
-#
 # Sync files in memory to disk.
-#
 sync
+

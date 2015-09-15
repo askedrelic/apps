@@ -1,43 +1,6 @@
 #!/bin/bash -x
-set -e
-set -u
 
-export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/paths/public/0/domain)
-export GATEWAY=$(curl --silent http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/gateway)
-URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/public/0/uri)
-if [ "/" != "${URI: -1}" ] ; then
-    URI="$URI/"
-fi
-export URI
-
-# URI without an ending slash.
-URI_NOSLASH="$URI"
-if [ "/" == "${URI: -1}" ] ; then
-    URI_NOSLASH="${URI:0:-1}"
-fi
-export URI_NOSLASH
-
-
-# Permissions
-chmod 1777 /data/ /opt/
-
-
-# Swap space
-fallocate -l 2G /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-swapon /swapfile
-
-
-# Disable ipv6.
-cat <<DISABLE_IPV6 >>/etc/sysctl.conf
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-DISABLE_IPV6
-sysctl -p
-
+source <(curl -s https://raw.githubusercontent.com/portalplatform/apps/master/portal.sh)
 
 # Packages
 export DEBIAN_FRONTEND=noninteractive
@@ -64,7 +27,7 @@ server {
     listen 81;
     access_log /dev/null;
     error_log /dev/null;
-    return 302 https://${DOMAIN}${URI};
+    return 302 https://${DOMAIN}${PUBLIC_URI};
 }
 
 server {
@@ -73,11 +36,11 @@ server {
     access_log /dev/null;
     error_log /dev/null;
 
-    location $URI_NOSLASH {
+    location $PUBLIC_URI_NOSLASH {
         proxy_pass http://127.0.0.1:8888;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Scheme \$scheme;
-        proxy_set_header X-Script-Name $URI_NOSLASH;
+        proxy_set_header X-Script-Name $PUBLIC_URI_NOSLASH;
         proxy_redirect https://127.0.0.1:8888/ https://$DOMAIN/;
     }
 }
@@ -93,7 +56,7 @@ git clone https://github.com/asciimoo/searx
 # Build
 cd searx/
 perl -pi -e "s#ultrasecretkey#$(openssl rand -hex 16)#" searx/settings.yml
-perl -pi -e "s#base_url : False#base_url : \"https://${DOMAIN}${URI_NOSLASH}\"#" searx/settings.yml
+perl -pi -e "s#base_url : False#base_url : \"https://${DOMAIN}${PUBLIC_URI_NOSLASH}\"#" searx/settings.yml
 
 
 # Permissions
@@ -109,7 +72,9 @@ virtualenv searx-ve
 pip install -r requirements.txt
 python setup.py install
 SETUP
+
 chmod 755 /tmp/setup
+
 su -s /bin/bash -l $USERNAME -c /tmp/setup
 
 cat <<RUN >/tmp/run
@@ -132,5 +97,5 @@ script
 end script
 UPSTART
 
-
 start searx
+

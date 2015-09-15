@@ -1,52 +1,31 @@
 #!/bin/bash
 
-# Bash settings
-set -e
-set -u
+source <(curl -s https://raw.githubusercontent.com/portalplatform/apps/master/portal.sh)
 
-# Set the sticky bit.
-chmod 1777 /data/
-
-export USERNAME=$(curl --silent http://169.254.169.254/metadata/v1/user/username)
-export DOMAIN=$(curl --silent http://169.254.169.254/metadata/v1/domains/public/0/name)
 export DAEMON_URL="https://ghost.org/zip/ghost-0.6.4.zip"
 
-URI=$(curl --silent http://169.254.169.254/metadata/v1/paths/public/0/uri)
-if [ "/" != "${URI: -1}" ] ; then
-    URI="$URI/"
-fi
-export URI
-
-
-#
 # Packages
-#
+# TODO: test and switch to sourcenode repo.
 export DEBIAN_FRONTEND=noninteractive
 apt-get install -y python-software-properties 
 apt-add-repository -y ppa:chris-lea/node.js 
 apt-get update
-# apt-get upgrade -y
 apt-get install -y nodejs unzip nginx
-
 
 # Allow nodejs to bind to privileged ports as non-root.
 setcap cap_net_bind_service=+ep /usr/bin/nodejs
 
-#
 # Nginx redirect.
-#
-cat <<NGINX > /etc/nginx/sites-available/default
+cat <<NGINX >/etc/nginx/sites-available/default
 server {
     listen 81 default_server;
-    return 302 https://${DOMAIN}${URI}ghost;
+    return 302 https://${DOMAIN}${PUBLIC_URI_WITHSLASH}ghost;
 }
 NGINX
 
 service nginx restart
 
-#
 # Download and setup Ghost
-#
 cd /opt/ && wget $DAEMON_URL && unzip $(basename $DAEMON_URL)
 
 # TODO: Failing sometimes with:
@@ -66,7 +45,7 @@ var path = require('path'), config;
 
 config = {
     production: {
-        url: 'https://${DOMAIN}${URI}',
+        url: 'https://${DOMAIN}${PUBLIC_URI_WITHSLASH}',
         mail: {
             transport: 'SMTP',
             options: {
@@ -102,10 +81,8 @@ module.exports = config;
 CONFIG
 
 
-#
-# Create and start the Ghost daemon.
-#
-cat <<UPSTART > /etc/init/ghost.conf
+# Create the Ghost service.
+cat <<UPSTART >/etc/init/ghost.conf
 description "Ghost"
 start on runlevel [2345]
 stop on runlevel [!2345]
@@ -117,14 +94,9 @@ UPSTART
 
 start ghost
 
-#
 # Sync files in memory to disk.
-#
 sync
 
-
 # Wait until it's up
-until curl --output /dev/null --silent --fail "https://${DOMAIN}${URI}"; do
-    sleep 2
-done
+until curl --output /dev/null --silent --fail "https://${DOMAIN}${PUBLIC_URI_WITHSLASH}"; do sleep 2 done
 

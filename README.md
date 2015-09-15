@@ -1,5 +1,6 @@
 Portal Apps (BETA)
 ==============================
 
-Simple Portal apps that anyone can use. Much room for improvement all around!
+A constantly updating list of Portal apps that anyone can use. All very earl versions with much room for improvement!
+
 
