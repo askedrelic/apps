@@ -91,7 +91,7 @@ description "gogs"
 start on runlevel [2345]
 stop on runlevel [!2345]
 respawn
-exec su -s /bin/sh -l $USERNAME -c 'cd /opt/gogs/ && ./gogs web --config custom/conf/app.ini'
+exec su -s /bin/sh -l $USERNAME -c '/opt/gogs/gogs web --config /opt/gogs/custom/conf/app.ini'
 UPSTART
 
 # Start services
